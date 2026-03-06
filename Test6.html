@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI in Actuarial Science Module</title>
+  <style>
+    :root {
+      --aiam-bg: #f5f7fb;
+      --aiam-card: #ffffff;
+      --aiam-surface: #f2f5fa;
+      --aiam-border: #d5dfeb;
+      --aiam-primary: #1f3e66;
+      --aiam-text: #12263f;
+      --aiam-text-muted: #4f6177;
+      --aiam-focus: #0c5bbf;
+      --aiam-shell-height: clamp(640px, 78vh, 920px);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--aiam-bg);
+      color: var(--aiam-text);
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      padding: 0;
+    }
+
+    .aiam-shell {
+      width: 100%;
+      max-width: 1460px;
+      min-height: 100vh;
+      height: var(--aiam-shell-height);
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .aiam-module {
+      width: 100%;
+      height: 100%;
+      border: 1px solid var(--aiam-border);
+      border-radius: 18px;
+      background: var(--aiam-card);
+      box-shadow: 0 10px 28px rgba(18, 38, 63, 0.07);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(290px, 350px) minmax(0, 1fr);
+    }
+
+    .aiam-nav {
+      min-height: 0;
+      padding: 22px 18px 20px;
+      background: var(--aiam-surface);
+      border-right: 1px solid var(--aiam-border);
+      overflow: auto;
+    }
+
+    .aiam-nav-group + .aiam-nav-group {
+      margin-top: 10px;
+    }
+
+    .aiam-section-btn {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--aiam-text);
+      text-align: left;
+      padding: 15px 16px;
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
+    }
+
+    .aiam-section-btn:hover {
+      background: #e4ebf5;
+      border-color: #c7d4e6;
+    }
+
+    .aiam-section-btn:focus-visible,
+    .aiam-concept-btn:focus-visible {
+      outline: 3px solid rgba(12, 91, 191, 0.28);
+      outline-offset: 1px;
+      border-color: var(--aiam-focus);
+    }
+
+    .aiam-section-btn[aria-expanded="true"] {
+      background: var(--aiam-primary);
+      color: #ffffff;
+      border-color: var(--aiam-primary);
+    }
+
+    .aiam-caret {
+      width: 12px;
+      height: 12px;
+      transform: rotate(0deg);
+      transition: transform 180ms ease;
+      flex-shrink: 0;
+    }
+
+    .aiam-section-btn[aria-expanded="true"] .aiam-caret {
+      transform: rotate(90deg);
+    }
+
+    .aiam-concepts {
+      margin-top: 6px;
+      margin-left: 12px;
+      padding-left: 16px;
+      border-left: 1px solid #d5deeb;
+      display: grid;
+      gap: 6px;
+    }
+
+    .aiam-concept-btn {
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--aiam-text-muted);
+      text-align: left;
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
+    }
+
+    .aiam-concept-btn:hover {
+      color: var(--aiam-text);
+      background: #e7edf6;
+      border-color: #cad7e8;
+    }
+
+    .aiam-concept-btn[aria-pressed="true"] {
+      background: #dfe8f5;
+      color: #163b63;
+      border-color: #bccbe0;
+      font-weight: 650;
+    }
+
+    .aiam-reading {
+      padding: 22px 28px 18px 22px;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+      gap: 10px;
+      justify-items: stretch;
+      align-content: start;
+    }
+
+    .aiam-reading > * {
+      max-width: 960px;
+      width: 100%;
+    }
+
+    .aiam-section-kicker {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.35;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #5b6a7a;
+    }
+
+    .aiam-title {
+      margin: 0;
+      font-size: clamp(30px, 3vw, 44px);
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+      color: var(--aiam-text);
+    }
+
+    .aiam-divider {
+      width: 72px;
+      height: 3px;
+      background: var(--aiam-primary);
+      border-radius: 999px;
+      margin-top: 10px;
+    }
+
+    .aiam-paragraphs {
+      min-height: 0;
+      overflow: auto;
+      padding-right: 8px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .aiam-paragraphs p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--aiam-text-muted);
+    }
+
+    .aiam-visual {
+      width: 50%;
+      margin: 2px auto 6px;
+      border: 1px solid #cbd7e7;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #eef3fa;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    .aiam-visual-img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+    }
+
+    .aiam-visual-caption {
+      margin: 0;
+      padding: 8px 12px;
+      border-top: 1px solid #d6e0ee;
+      background: #f7f9fd;
+      color: #5b6a7c;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .aiam-points {
+      border: 1px solid #cbd7e7;
+      background: linear-gradient(180deg, #f7f9fc 0%, #eef3f9 100%);
+      border-radius: 14px;
+      padding: 14px 16px;
+      align-self: end;
+    }
+
+    .aiam-points-title {
+      margin: 0 0 10px;
+      font-size: 12px;
+      line-height: 1.35;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--aiam-text-muted);
+    }
+
+    .aiam-points-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .aiam-points-list li {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      align-items: start;
+      gap: 12px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--aiam-text);
+    }
+
+    .aiam-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #dbe6f5;
+      color: #1a3f6a;
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      margin-top: 1px;
+    }
+
+    .aiam-sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1100px) {
+      .aiam-shell { padding: 14px; }
+      .aiam-module { grid-template-columns: minmax(280px, 320px) minmax(0, 1fr); }
+      .aiam-reading { padding: 18px 20px 16px 18px; }
+      .aiam-reading > * { max-width: 860px; }
+    }
+
+    @media (max-width: 920px) {
+      .aiam-shell {
+        min-height: 0;
+        height: auto;
+        padding: 12px;
+      }
+
+      .aiam-module {
+        min-height: 0;
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(320px, auto) minmax(0, 1fr);
+      }
+
+      .aiam-nav {
+        border-right: 0;
+        border-bottom: 1px solid var(--aiam-border);
+      }
+
+      .aiam-reading { padding: 18px 16px 16px; }
+      .aiam-reading > * { max-width: none; }
+      .aiam-title { font-size: 28px; }
+      .aiam-visual { width: 72%; }
+    }
+
+    @media (max-width: 640px) {
+      .aiam-shell { padding: 8px; }
+      .aiam-module { border-radius: 14px; }
+      .aiam-nav { padding: 16px 12px 14px; }
+      .aiam-reading { padding: 16px 12px 14px; }
+      .aiam-paragraphs p,
+      .aiam-points-list li { font-size: 15px; }
+      .aiam-visual { width: 100%; margin: 2px 0 6px; }
+      .aiam-visual-caption { padding: 7px 10px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="aiam-shell">
+    <h1 class="aiam-sr-only">AI in Actuarial Science learning module</h1>
+
+    <section class="aiam-module" aria-label="AI in Actuarial Science learning module">
+      <nav class="aiam-nav" id="aiam-nav" aria-label="Module navigation"></nav>
+
+      <article class="aiam-reading" aria-live="polite">
+        <p class="aiam-section-kicker" id="aiam-section-kicker"></p>
+        <div>
+          <h2 class="aiam-title" id="aiam-title"></h2>
+          <div class="aiam-divider" aria-hidden="true"></div>
+        </div>
+        <div class="aiam-paragraphs" id="aiam-paragraphs"></div>
+        <figure class="aiam-visual" id="aiam-visual">
+          <img class="aiam-visual-img" id="aiam-visual-img" alt="" loading="lazy" decoding="async" />
+          <figcaption class="aiam-visual-caption" id="aiam-visual-caption"></figcaption>
+        </figure>
+        <section class="aiam-points" aria-label="Key points">
+          <h3 class="aiam-points-title">Key Points</h3>
+          <ul class="aiam-points-list" id="aiam-points"></ul>
+        </section>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const moduleData = {
+      sections: [
+        {
+          id: "where-ai-appears",
+          title: "Where AI Appears in This Field",
+          concepts: [
+            {
+              id: "uncertain-future-outcomes",
+              title: "Uncertain Future Outcomes",
+              paragraphs: [
+                "This module describes how AI is discussed in actuarial science. It is descriptive rather than instructional, and it stays grounded in risk-focused practice.",
+                "In actuarial work, AI appears most often when organizations estimate uncertain future outcomes tied to claims, pricing decisions, and long-term obligations.",
+                "Large volumes of historical experience data make this possible, but the core actuarial goal stays the same: estimate risk over time with disciplined assumptions and model logic."
+              ],
+              keyPoints: [
+                "AI appears where future risk estimates rely on large historical datasets.",
+                "Common contexts include claims, pricing, and long-term obligations.",
+                "The core actuarial objective remains risk estimation under uncertainty."
+              ]
+            },
+            {
+              id: "pricing-reserves-liabilities",
+              title: "Pricing, Reserves, and Liabilities",
+              paragraphs: [
+                "In professional settings, AI is often discussed when firms refine pricing strategies, reserve assumptions, or long-duration liability projections.",
+                "As rating structures and portfolio detail increase, teams use AI-informed methods to evaluate more interactions than fixed assumptions can easily capture at scale.",
+                "Even then, actuarial teams still determine which assumptions are appropriate and how model outputs should be interpreted for business and regulatory use."
+              ],
+              keyPoints: [
+                "Frequent use-case areas are pricing, reserves, and long-term liabilities.",
+                "AI can help analyze complex interactions across detailed risk factors.",
+                "Assumption selection and interpretation remain actuarial responsibilities."
+              ]
+            },
+            {
+              id: "claims-patterns-and-trends",
+              title: "Claims Patterns and Trend Signals",
+              paragraphs: [
+                "AI also appears in experience analysis where actuaries review claim frequency, severity, settlement timing, and portfolio-level trend movement.",
+                "With more granular and frequently updated data, AI can help surface pattern shifts or anomalies that warrant deeper actuarial review.",
+                "These tools are generally framed as screening and support layers, not substitutes for professional judgment about causality, credibility, or materiality."
+              ],
+              keyPoints: [
+                "AI can help detect evolving patterns in claims experience data.",
+                "Granular updates make manual monitoring harder without automated support.",
+                "Pattern detection still requires actuarial interpretation before decisions."
+              ]
+            },
+            {
+              id: "scale-and-model-consistency",
+              title: "Scale and Model Consistency",
+              paragraphs: [
+                "As data volume and model complexity grow, traditional approaches become harder to manage consistently across products, entities, and time periods.",
+                "AI enters these discussions as one way to support scalable model operations while preserving comparability and consistency in output review.",
+                "Across contexts, it is presented as an extension of existing actuarial mathematics, not a replacement for the discipline's foundations."
+              ],
+              keyPoints: [
+                "AI is used to help scale model workflows as data complexity rises.",
+                "Consistency across models is a key operational objective.",
+                "Actuarial mathematical foundations remain the base framework."
+              ]
+            }
+          ]
+        },
+        {
+          id: "what-ai-is-expected-to-do",
+          title: "What AI Is Expected to Do",
+          concepts: [
+            {
+              id: "handle-large-granular-data",
+              title: "Handle Large and Granular Data",
+              paragraphs: [
+                "In actuarial science, AI is commonly expected to help models handle larger and more detailed datasets without losing structure.",
+                "This expectation appears most in work tied to pricing adequacy, reserve movement, and long-horizon risk estimates where data heterogeneity is high.",
+                "The focus is not changing actuarial purpose, but improving how model workflows handle volume, variation, and uncertainty."
+              ],
+              keyPoints: [
+                "Expected value includes handling high-volume, high-detail actuarial data.",
+                "Typical targets are pricing, reserves, and long-horizon outcomes.",
+                "Goal: improve scale and robustness, not replace actuarial purpose."
+              ]
+            },
+            {
+              id: "scenario-and-sensitivity-testing",
+              title: "Scenario and Sensitivity Testing",
+              paragraphs: [
+                "AI is frequently discussed as support for sensitivity analysis and scenario testing when many variables interact and outcomes are nonlinear.",
+                "Actuaries can use these methods to examine how small shifts in assumptions or inputs change projected risk across multiple model views.",
+                "This supports a broader actuarial workflow where uncertainty is explored through comparative testing rather than a single fixed run."
+              ],
+              keyPoints: [
+                "AI supports sensitivity and scenario analysis in complex model settings.",
+                "It helps test how input changes affect projected outcomes.",
+                "Comparative testing remains central to uncertainty evaluation."
+              ]
+            },
+            {
+              id: "model-comparison-and-calibration",
+              title: "Model Comparison and Calibration",
+              paragraphs: [
+                "Another expectation is stronger model comparison: AI can help teams evaluate competing model structures and calibration choices more efficiently.",
+                "As new data arrives, AI-assisted workflows may support incremental updating and re-evaluation without rebuilding every component from scratch.",
+                "This can improve responsiveness while still requiring rigorous actuarial validation before results are relied upon."
+              ],
+              keyPoints: [
+                "AI can assist model comparison and calibration workflows.",
+                "It may support ongoing updates as new data appears.",
+                "Validation is required before outputs are treated as reliable."
+              ]
+            },
+            {
+              id: "pattern-review-support",
+              title: "Pattern Review Support for Actuaries",
+              paragraphs: [
+                "AI is also expected to organize information and highlight patterns or trends that merit closer actuarial review.",
+                "In this role, the system helps prioritize attention, but it does not determine final assumptions, selections, or professional conclusions.",
+                "Most actuarial discussions position AI as decision support that keeps actuarial judgment at the center of final interpretation."
+              ],
+              keyPoints: [
+                "AI can prioritize reviews by surfacing potentially relevant patterns.",
+                "It supports workflow focus but does not own final conclusions.",
+                "Final interpretation remains with actuaries and governance processes."
+              ]
+            }
+          ]
+        },
+        {
+          id: "limits-and-misunderstandings",
+          title: "Limits and Common Misunderstandings",
+          concepts: [
+            {
+              id: "assumptions-still-drive-results",
+              title: "Assumptions Still Drive Results",
+              paragraphs: [
+                "A common misunderstanding is that AI can replace the assumptions and judgment that underpin actuarial risk models.",
+                "In reality, modeling choices about structure, data treatment, and assumption relevance shape results before any algorithm is run.",
+                "AI can process patterns, but it cannot remove the need for disciplined actuarial assumption-setting and professional skepticism."
+              ],
+              keyPoints: [
+                "Assumptions and modeling choices remain primary drivers of results.",
+                "AI does not eliminate actuarial judgment requirements.",
+                "Professional skepticism is still necessary in model interpretation."
+              ]
+            },
+            {
+              id: "complexity-vs-interpretability",
+              title: "Complexity vs Interpretability",
+              paragraphs: [
+                "Another oversimplification is assuming that more complex models automatically produce better actuarial estimates.",
+                "Actuarial models must also be interpretable, testable, and defensible, especially when they inform pricing and long-term commitments.",
+                "When complexity rises too quickly, it can become harder to explain why outputs change or validate behavior across scenarios."
+              ],
+              keyPoints: [
+                "Higher complexity does not guarantee better actuarial quality.",
+                "Interpretability and testability are core actuarial requirements.",
+                "Defensibility can weaken if model behavior is hard to explain."
+              ]
+            },
+            {
+              id: "historical-data-shift-risk",
+              title: "Historical Data and Shift Risk",
+              paragraphs: [
+                "There is also a tendency to overestimate how well AI reacts to changing risk environments.",
+                "Many actuarial datasets reflect past conditions; when patterns shift, models can become unstable unless shifts are detected and reviewed promptly.",
+                "Data quality changes, regime breaks, and structural shifts all require active actuarial oversight rather than passive reliance on prior fit."
+              ],
+              keyPoints: [
+                "Historical fit does not guarantee future reliability.",
+                "Regime shifts and data quality changes can destabilize models.",
+                "Active oversight is required when risk environments evolve."
+              ]
+            },
+            {
+              id: "governance-and-validation-required",
+              title: "Governance and Validation Required",
+              paragraphs: [
+                "In practice, AI is rarely treated as an independent actuarial solution.",
+                "Actuarial work still depends on governance, validation frameworks, documentation, and ongoing review cycles.",
+                "Most field discussions focus on how AI fits inside existing controls, not on how much responsibility can be delegated to the tool."
+              ],
+              keyPoints: [
+                "AI is not a standalone actuarial operating model.",
+                "Governance, validation, and documentation remain mandatory.",
+                "Use is strongest when embedded inside existing controls."
+              ]
+            }
+          ]
+        },
+        {
+          id: "key-considerations",
+          title: "Key Considerations for This Discipline",
+          concepts: [
+            {
+              id: "uncertainty-first-mindset",
+              title: "Uncertainty-First Mindset",
+              paragraphs: [
+                "For actuarial students, AI is best understood through the lens of uncertainty rather than certainty.",
+                "Actuarial models estimate outcomes that cannot be known in advance, and AI is useful when it helps examine how risk moves under different assumptions.",
+                "The objective is not to remove uncertainty, but to understand its structure and sensitivity more clearly."
+              ],
+              keyPoints: [
+                "Actuarial AI work starts from uncertainty, not deterministic certainty.",
+                "Value comes from exploring how outcomes change under assumptions.",
+                "Goal: better uncertainty understanding, not uncertainty removal."
+              ]
+            },
+            {
+              id: "control-and-model-risk",
+              title: "Control and Model Risk Discipline",
+              paragraphs: [
+                "Control is a core actuarial consideration whenever AI enters pricing, reserving, or long-term financial decision support.",
+                "Models must be tested, reviewed, and monitored so result shifts can be traced and evaluated against assumptions.",
+                "This makes model risk management and validation discipline non-optional in practical actuarial AI use."
+              ],
+              keyPoints: [
+                "Strong control discipline is required for actuarial AI model use.",
+                "Result changes must be traceable to assumptions or input shifts.",
+                "Model risk management is central, not peripheral."
+              ]
+            },
+            {
+              id: "transparency-and-defensibility",
+              title: "Transparency and Defensibility",
+              paragraphs: [
+                "As models become more sophisticated, transparency becomes harder but more important.",
+                "Actuarial outputs that affect prices or liabilities must be explainable and defensible to reviewers, stakeholders, and governance forums.",
+                "AI approaches are therefore evaluated partly on whether they improve analytical power without sacrificing explainability."
+              ],
+              keyPoints: [
+                "Sophistication must be balanced with transparency.",
+                "Outputs must remain explainable and defensible in review settings.",
+                "Analytical gains should not come at the cost of traceability."
+              ]
+            },
+            {
+              id: "human-judgment-accountability",
+              title: "Human Judgment and Accountability",
+              paragraphs: [
+                "Overall, AI is discussed as a tool that works within actuarial responsibilities rather than replacing them.",
+                "Assumptions, validation decisions, and final interpretation remain professional tasks owned by actuaries and their governance structures.",
+                "The discipline's accountability model stays human, even when model tooling becomes more advanced."
+              ],
+              keyPoints: [
+                "AI supports actuarial work but does not own accountability.",
+                "Judgment, validation, and interpretation remain human duties.",
+                "Professional responsibility is not outsourced to automation."
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    const state = {
+      activeSectionId: moduleData.sections[0].id,
+      activeConceptId: moduleData.sections[0].concepts[0].id
+    };
+
+    // Actuarial-science-focused visuals from Wikimedia Commons
+    const visualLibrary = {
+      actuarialNotation: "https://commons.wikimedia.org/wiki/Special:FilePath/Actuarial%20notation.svg",
+      annuitiesNotation: "https://commons.wikimedia.org/wiki/Special:FilePath/Annuities%20actuarial%20notation.svg",
+      survivalActuarial: "https://commons.wikimedia.org/wiki/Special:FilePath/Courbe%20survie%20locotracteurs%20actuarielle.svg",
+      survivalKaplan: "https://commons.wikimedia.org/wiki/Special:FilePath/Courbe%20survie%20locotracteurs%20Kaplan%20Meier.svg",
+      cumulativeCashflow: "https://commons.wikimedia.org/wiki/Special:FilePath/Cumulative%20Cashflow%20diagram.jpg",
+      mortalityTable: "https://commons.wikimedia.org/wiki/Special:FilePath/Mortality%20table%20TR%20Edmonds.png",
+      lifeTables: "https://commons.wikimedia.org/wiki/Special:FilePath/%22Life%20tables%22%2C%20William%20Farr%20Wellcome%20L0016432.jpg",
+      riskMatrixSimple: "https://commons.wikimedia.org/wiki/Special:FilePath/Risk%20Matrix%20Simple.jpg",
+      riskMatrixPareto: "https://commons.wikimedia.org/wiki/Special:FilePath/Risk%20matrix%20-%20Pareto%20Distribution.jpg",
+      kaplanMeierAml: "https://commons.wikimedia.org/wiki/Special:FilePath/Kaplan-Meier%20curve%20for%20aml%20with%20confidence%20bounds.svg",
+      kaplanMeierMortality: "https://commons.wikimedia.org/wiki/Special:FilePath/Kaplan-Meier%20curve%20mortality.jpg",
+      normalPdf: "https://commons.wikimedia.org/wiki/Special:FilePath/Normal%20distribution%20pdf.svg",
+      normalPdfMulti: "https://commons.wikimedia.org/wiki/Special:FilePath/Normal%20Distribution%20PDF.svg",
+      glmGeometry: "https://commons.wikimedia.org/wiki/Special:FilePath/General%20Cylinder.PNG",
+      actuarial2: "https://commons.wikimedia.org/wiki/Special:FilePath/Actuarial2.jpg",
+      actuarial3: "https://commons.wikimedia.org/wiki/Special:FilePath/Actuarial3.jpg"
+    };
+
+    const conceptVisuals = {
+      "uncertain-future-outcomes": {
+        src: visualLibrary.actuarialNotation,
+        alt: "Actuarial notation diagram used in risk and uncertainty modeling.",
+        caption: "Actuarial AI conversations begin within formal risk notation and uncertainty frameworks."
+      },
+      "pricing-reserves-liabilities": {
+        src: visualLibrary.annuitiesNotation,
+        alt: "Annuities actuarial notation diagram relevant to reserves and long-term liabilities.",
+        caption: "Pricing and reserve analysis often links to long-horizon actuarial notation and cashflow timing."
+      },
+      "claims-patterns-and-trends": {
+        src: visualLibrary.kaplanMeierMortality,
+        alt: "Kaplan-Meier style survival or mortality curve showing trend behavior over time.",
+        caption: "Claims and trend review frequently uses time-to-event and survival-style evidence."
+      },
+      "scale-and-model-consistency": {
+        src: visualLibrary.cumulativeCashflow,
+        alt: "Cumulative cashflow diagram related to actuarial and financial risk projection.",
+        caption: "As scale grows, consistency across model outputs and projections becomes critical."
+      },
+      "handle-large-granular-data": {
+        src: visualLibrary.normalPdf,
+        alt: "Normal distribution probability density function chart used in modeling.",
+        caption: "Handling high-volume granular data still depends on disciplined statistical structure."
+      },
+      "scenario-and-sensitivity-testing": {
+        src: visualLibrary.normalPdfMulti,
+        alt: "Multiple normal distribution curves used to compare scenario assumptions.",
+        caption: "Scenario and sensitivity testing compares how assumption sets shift projected outcomes."
+      },
+      "model-comparison-and-calibration": {
+        src: visualLibrary.glmGeometry,
+        alt: "Generalized model geometry graphic relevant to model structure comparison.",
+        caption: "Calibration and model comparison require consistent structure and fit evaluation."
+      },
+      "pattern-review-support": {
+        src: visualLibrary.riskMatrixPareto,
+        alt: "Risk matrix with Pareto distribution emphasizing concentration of severe risks.",
+        caption: "AI often supports pattern triage so actuaries can prioritize higher-impact review points."
+      },
+      "assumptions-still-drive-results": {
+        src: visualLibrary.mortalityTable,
+        alt: "Historical mortality table illustrating assumption-driven actuarial outcomes.",
+        caption: "Assumptions remain foundational drivers of actuarial results, with or without AI."
+      },
+      "complexity-vs-interpretability": {
+        src: visualLibrary.actuarial3,
+        alt: "Actuarial science visual emphasizing tradeoffs between complexity and clarity.",
+        caption: "Complex models can lose interpretability if governance and explanation are weak."
+      },
+      "historical-data-shift-risk": {
+        src: visualLibrary.survivalActuarial,
+        alt: "Actuarial survival curve showing how experience patterns may shift over time.",
+        caption: "Historical patterns can shift, so model behavior must be monitored under changing conditions."
+      },
+      "governance-and-validation-required": {
+        src: visualLibrary.riskMatrixSimple,
+        alt: "Simple risk matrix diagram used in governance and control contexts.",
+        caption: "Validation and governance controls are mandatory in actuarial AI workflows."
+      },
+      "uncertainty-first-mindset": {
+        src: visualLibrary.kaplanMeierAml,
+        alt: "Kaplan-Meier curve with confidence bounds representing uncertainty analysis.",
+        caption: "Uncertainty-first thinking means evaluating ranges and confidence, not single-point certainty."
+      },
+      "control-and-model-risk": {
+        src: visualLibrary.riskMatrixSimple,
+        alt: "Risk matrix emphasizing control discipline and model risk categorization.",
+        caption: "Model risk discipline requires explicit control frameworks for monitoring and escalation."
+      },
+      "transparency-and-defensibility": {
+        src: visualLibrary.lifeTables,
+        alt: "Historical life tables publication image emphasizing traceability and defensibility.",
+        caption: "Transparent documentation and defensible logic are core actuarial expectations."
+      },
+      "human-judgment-accountability": {
+        src: visualLibrary.actuarial2,
+        alt: "Actuarial science image representing human judgment and professional accountability.",
+        caption: "Final accountability remains with actuaries, not with automated tools."
+      }
+    };
+
+    const navRoot = document.getElementById("aiam-nav");
+    const sectionKickerEl = document.getElementById("aiam-section-kicker");
+    const titleEl = document.getElementById("aiam-title");
+    const visualEl = document.getElementById("aiam-visual");
+    const visualImgEl = document.getElementById("aiam-visual-img");
+    const visualCaptionEl = document.getElementById("aiam-visual-caption");
+    const paragraphsEl = document.getElementById("aiam-paragraphs");
+    const pointsEl = document.getElementById("aiam-points");
+
+    function getSection(sectionId) {
+      return moduleData.sections.find((section) => section.id === sectionId) || moduleData.sections[0];
+    }
+
+    function getConcept(section, conceptId) {
+      return section.concepts.find((concept) => concept.id === conceptId) || section.concepts[0];
+    }
+
+    function setActiveSection(sectionId) {
+      if (state.activeSectionId === sectionId) return;
+      const section = getSection(sectionId);
+      state.activeSectionId = section.id;
+      state.activeConceptId = section.concepts[0].id;
+      render();
+    }
+
+    function setActiveConcept(sectionId, conceptId) {
+      state.activeSectionId = sectionId;
+      state.activeConceptId = conceptId;
+      render();
+    }
+
+    function renderNavigation() {
+      navRoot.innerHTML = "";
+
+      moduleData.sections.forEach((section) => {
+        const isExpanded = section.id === state.activeSectionId;
+        const group = document.createElement("div");
+        group.className = "aiam-nav-group";
+
+        const sectionButton = document.createElement("button");
+        sectionButton.type = "button";
+        sectionButton.className = "aiam-section-btn";
+        sectionButton.setAttribute("aria-expanded", String(isExpanded));
+        sectionButton.setAttribute("aria-controls", `aiam-concepts-${section.id}`);
+        sectionButton.innerHTML = `<span class="aiam-caret" aria-hidden="true">&#9656;</span><span>${section.title}</span>`;
+        sectionButton.addEventListener("click", () => setActiveSection(section.id));
+        group.appendChild(sectionButton);
+
+        if (isExpanded) {
+          const conceptsWrap = document.createElement("div");
+          conceptsWrap.className = "aiam-concepts";
+          conceptsWrap.id = `aiam-concepts-${section.id}`;
+
+          section.concepts.forEach((concept) => {
+            const conceptButton = document.createElement("button");
+            const isActive = concept.id === state.activeConceptId;
+            conceptButton.type = "button";
+            conceptButton.className = "aiam-concept-btn";
+            conceptButton.textContent = concept.title;
+            conceptButton.setAttribute("aria-pressed", String(isActive));
+            conceptButton.addEventListener("click", () => setActiveConcept(section.id, concept.id));
+            conceptsWrap.appendChild(conceptButton);
+          });
+
+          group.appendChild(conceptsWrap);
+        }
+
+        navRoot.appendChild(group);
+      });
+    }
+
+    function renderReadingPanel() {
+      const section = getSection(state.activeSectionId);
+      const concept = getConcept(section, state.activeConceptId);
+
+      sectionKickerEl.textContent = section.title;
+      titleEl.textContent = concept.title;
+
+      paragraphsEl.innerHTML = "";
+      concept.paragraphs.forEach((paragraphText) => {
+        const p = document.createElement("p");
+        p.textContent = paragraphText;
+        paragraphsEl.appendChild(p);
+      });
+
+      const visual = conceptVisuals[concept.id] || {
+        src: visualLibrary.actuarialNotation,
+        alt: "Actuarial analysis visual.",
+        caption: "General actuarial analysis context."
+      };
+      visualImgEl.src = visual.src;
+      visualImgEl.alt = visual.alt;
+      visualCaptionEl.textContent = visual.caption;
+      visualEl.hidden = false;
+
+      pointsEl.innerHTML = "";
+      concept.keyPoints.forEach((point, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<span class="aiam-dot" aria-hidden="true">${index + 1}</span><span>${point}</span>`;
+        pointsEl.appendChild(li);
+      });
+    }
+
+    function render() {
+      renderNavigation();
+      renderReadingPanel();
+    }
+
+    render();
+  </script>
+</body>
+</html>
